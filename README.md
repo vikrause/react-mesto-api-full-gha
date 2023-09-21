@@ -26,5 +26,9 @@
 * ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)
 
 IP  84.252.139.233
+
+### Links to the project:
+
 Frontend  https://domainname.vikrause1.nomoredomainsrocks.ru
+
 Backend  https://api.domainname.vikrause1.nomoredomainsrocks.ru
