@@ -17,7 +17,7 @@ const createCard = (req, res, next) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequest('Некорректные данные');
+        next(new BadRequest('Некорректные данные'));
       }
     })
     .catch(next);
@@ -27,14 +27,14 @@ const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   return Card.findById(cardId)
     .orFail(() => {
-      throw new NotFound('Карточка не найдена');
+      next(new NotFound('Карточка не найдена'));
     })
     .then((card) => {
       if (card.owner.toString() === req.user._id) {
         return Card.findByIdAndRemove(cardId)
           .then(() => res.send(card));
       }
-      throw new ForbiddenError('Нет доступа');
+      return next(new ForbiddenError('Нет доступа'));
     })
     .catch(next);
 };
@@ -45,16 +45,13 @@ const likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   ).orFail(() => {
-    throw new NotFound('Карточка не найдена');
+    next(new NotFound('Карточка не найдена'));
   })
     .then((card) => res.send(card))
 
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Некорректные данные'));
-      }
-      if (err.message === 'NotFound') {
-        next(new NotFound('Карточка не найдена'));
       }
       next(err);
     });
@@ -65,15 +62,14 @@ const dislikeCard = (req, res, next) => {
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
-  ).orFail(() => new Error('NotFound'))
+  ).orFail(() => {
+      next(new NotFound('Карточка не найдена'));
+  })
     .then((card) => res.send(card))
 
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Некорректные данные'));
-      }
-      if (err.message === 'NotFound') {
-        next(new NotFound('Карточка не найдена'));
       }
       next(err);
     });
