@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
-const cookieParser = require('cookie-parser');
 const routes = require('./routes');
 const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/errorHandler');
@@ -14,7 +13,6 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 const allowedCors = [
   'https://praktikum.tk',
@@ -23,10 +21,10 @@ const allowedCors = [
   'http://localhost:3000',
 ];
 
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   const { origin } = req.headers;
   const { method } = req;
-  const DEFAULT_ALLOWED_METHODS = "GET,HEAD,PUT,PATCH,POST,DELETE";
+  const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
   const requestHeaders = req.headers['access-control-request-headers'];
 
   if (allowedCors.includes(origin)) {

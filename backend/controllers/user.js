@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFound = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
-const BadRequest = require('../errors/BadRequest');
 
 require('dotenv').config();
 
@@ -65,8 +64,7 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err.code === 11000) {
         next(new ConflictError('Пользователь с таким email уже существует'));
-      }
-      else {
+      } else {
         next(err);
       }
     });
@@ -106,9 +104,6 @@ const login = (req, res, next) => {
   User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-      res.cookie('jwt', token, {
-        maxAge: 3600000, httpOnly: true,
-      });
       res.send({ token });
     })
     .catch(next);
