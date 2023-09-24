@@ -16,7 +16,7 @@ const createCard = (req, res, next) => {
   return Card.create({ name, link, owner })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err instanceof 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequest('Некорректные данные'));
       } else {
         next(err);
@@ -51,7 +51,7 @@ const likeCard = (req, res, next) => {
     .then((card) => res.send(card))
 
     .catch((err) => {
-      if (err instanceof 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         next(new BadRequest('Некорректные данные'));
       } else {
         next(err);
@@ -70,7 +70,7 @@ const dislikeCard = (req, res, next) => {
     .then((card) => res.send(card))
 
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof mongoose.Error.CastError) {
         return next(new BadRequest('Некорректные данные'));
       }
       next(err);
